@@ -45,7 +45,7 @@ def sample_data(
     annotation_color=(200, 100, 200),
 ):
     for i in range(num_data):
-        num_sample = 5
+        num_sample = num_sample
         image = np.zeros(image_size, np.uint8)
         labels = []
         for _ in range(num_sample):
@@ -70,10 +70,10 @@ def sample_data(
 
 if __name__ == "__main__":
     train_num_data = 800
-    train_dataset_path = "./dataset/1_TEST/train"
+    train_dataset_path = "./dataset/1_XYHW/train"
 
     val_num_data = 80
-    val_dataset_path = "./dataset/1_TEST/val"
+    val_dataset_path = "./dataset/1_XYHW/val"
 
     num_sample = 1
     image_size = (224, 224, 3)

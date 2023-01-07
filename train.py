@@ -8,14 +8,15 @@ from model import CNN18
 
 if __name__ == "__main__":
     torch.manual_seed(0)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     transform = transforms.Compose(
         transforms=[
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
         ]
     )
-    train_dataset = SampleDataset(path="./dataset/1_XYHW/train", transform=transforms)
-    val_dataset = SampleDataset(path="./dataset/1_XYHW/val", transform=transforms)
+    train_dataset = SampleDataset(path="./dataset/1_XYHW/train", transform=transform)
+    val_dataset = SampleDataset(path="./dataset/1_XYHW/val", transform=transform)
 
     batch_size = 8
     lr = 1e-4
@@ -29,7 +30,7 @@ if __name__ == "__main__":
         dataset=val_dataset,
         batch_size=batch_size,
     )
-    model = CNN18(3, 4)  # FCNN()
+    model = CNN18(3, 4).to(device)  # FCNN()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
     val_loss_value = -1
     avg_loss = -1
@@ -42,6 +43,9 @@ if __name__ == "__main__":
         for (x, y) in progress_bar:
             progress_bar.set_description(f"Epoch {epoch}")
             optimizer.zero_grad()
+
+            x = x.to(device)
+            y = y.to(device)
             y_pred = model(x)
             loss = torch.nn.functional.mse_loss(y_pred, y)
             epoch_loss.append(loss.item())
@@ -59,6 +63,9 @@ if __name__ == "__main__":
             val_progress_bar = tqdm(val_loader, leave=False)
             for (x, y) in val_progress_bar:
                 val_progress_bar.set_description(f"Validation Epoch {epoch}")
+
+                x = x.to(device)
+                y = y.to(device)
                 y_pred = model(x)
                 loss = torch.nn.functional.mse_loss(y_pred, y)
                 val_epoch_loss.append(loss.item())
