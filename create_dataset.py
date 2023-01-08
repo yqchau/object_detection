@@ -70,14 +70,14 @@ def sample_data(
 
 if __name__ == "__main__":
     train_num_data = 800
-    train_dataset_path = "./dataset/1_XYHW/train"
+    train_dataset_path = "./dataset/2_XYHW/train"
 
     val_num_data = 80
-    val_dataset_path = "./dataset/1_XYHW/val"
+    val_dataset_path = "./dataset/2_XYHW/val"
 
-    num_sample = 1
+    num_sample = 2
     image_size = (224, 224, 3)
-    annotation_type = "TLBR"  # XYHW or TLBR (Top Left Bottom Right coordinates)
+    annotation_type = "XYHW"  # XYHW or TLBR (Top Left Bottom Right coordinates)
     label_columns = ["center_x", "center_y", "width", "height"]
     annotation_color = (200, 100, 200)
 

@@ -1,7 +1,7 @@
 import cv2
 import torch
-
 import torchvision.transforms as transforms
+
 from datasets import SampleDataset
 from model import CNN18
 
@@ -34,12 +34,12 @@ def annotate_bbox(img, image_size, params, type="XYHW"):
 
 
 if __name__ == "__main__":
-    n_samples = 1
+    n_samples = 2
     n_dim = 4
     image_size = 64
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = CNN18(3, 4).to(device)  # FCNN()
+    model = CNN18(3, n_samples * n_dim).to(device)  # FCNN()
     model.load_state_dict(torch.load("./weights.pth"))
     model.eval()
     transform = transforms.Compose(
@@ -48,17 +48,24 @@ if __name__ == "__main__":
             transforms.ToTensor(),
         ]
     )
-    dataset = SampleDataset(path="./dataset/1_XYHW/val", transform=transform)
+    dataset = SampleDataset(path="./dataset/2_XYHW/train", transform=transform)
 
-    x, y = dataset.__getitem__(2)
+    x, y = dataset.__getitem__(0)
     x = x.to(device)
     y = y.to(device)
 
     y_pred = model(x.unsqueeze(0))
-    img = x.view(3, image_size, image_size).permute(1, 2, 0).contiguous().detach().cpu().numpy() * 255
+    img = (
+        x.view(3, image_size, image_size)
+        .permute(1, 2, 0)
+        .contiguous()
+        .detach()
+        .cpu()
+        .numpy()
+        # * 255
+    )
     params = y_pred.view(n_samples, n_dim).detach().cpu().numpy()
-    annotate_bbox(img, image_size=image_size, params=params, type="TLBR")
-
+    annotate_bbox(img, image_size=image_size, params=params, type="XYHW")
 
     # cv2.imwrite('./inference.png', img)
     cv2.imshow("image", img)
